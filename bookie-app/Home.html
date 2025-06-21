@@ -2,10 +2,107 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bookie | Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="Style.css">
 </head>
-<body>
-  <h1>Bem-vindo ao Bookie 📚</h1>
+<body class="bookie-layout">
+  <nav class="sidebar" id="sidebar">
+    <button id="close-sidebar" class="close-btn" aria-label="Fechar menu">✖</button>
+    <h2 class="sidebar-title">Bookie 📖</h2>
+    <ul>
+      <li><a href="#">Meu Perfil</a></li>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Criar</a></li>
+      <li><a href="#">Trocar Livros</a></li>
+      <li><a href="#">Livros Salvos</a></li>
+      <li><button id="logout-button" class="logout-btn">Logout</button></li>
+    </ul>
+  </nav>
+
+  <div id="overlay" class="overlay hidden"></div>
+
+  <div class="main-area">
+    
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu lateral">☰</button>
+      </div>
+      <input type="text" class="search-input" placeholder="Buscar livros, pessoas, listas..." />
+    </header>
+
+    <main class="content">
+      <div class="new-post-bar">
+        <button class="new-post-btn">+ Fazer Postagem</button>
+      </div>
+
+      <section class="feed">
+        <article class="post">
+          <div class="post-header">
+            <strong>@name</strong> <span class="post-time">• há 15 minutos</span>
+          </div>
+          <p class="post-text">Acabei de terminar “A Hipótese do Amor”. Que delícia de leitura! ❤️</p>
+          <div class="post-footer">
+            <span>10 Curtidas</span> • <span>2 Comentários</span>
+          </div>
+        </article>
+
+        <article class="post">
+          <div class="post-header">
+            <strong>@marina</strong> <span class="post-time">• há 1 hora</span>
+          </div>
+          <p class="post-text">Lendo “Teto para Dois” e rindo horrores. 😄</p>
+          <div class="post-footer">
+            <span>5 Curtidas</span> • <span>1 Comentário</span>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-CAyWmuhx_Z4onMkUKwbi9zdXV4SnGZs",
+      authDomain: "bookie-8cb30.firebaseapp.com",
+      databaseURL: "https://bookie-8cb30-default-rtdb.firebaseio.com",
+      projectId: "bookie-8cb30",
+      storageBucket: "bookie-8cb30.appspot.com",
+      messagingSenderId: "128047446609",
+      appId: "1:128047446609:web:114b80f8cbefec190c9670",
+      measurementId: "G-GDSGLFFE3M"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const logoutBtn = document.getElementById("logout-button");
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    });
+
+    const toggle = document.getElementById("menu-toggle");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const closeBtn = document.getElementById("close-sidebar");
+
+    toggle.addEventListener("click", () => {
+      sidebar.classList.add("active");
+      overlay.classList.remove("hidden");
+    });
+
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      overlay.classList.add("hidden");
+    });
+
+    closeBtn.addEventListener("click", () => {
+      sidebar.classList.remove("active");
+      overlay.classList.add("hidden");
+    });
+  </script>
 </body>
 </html>
