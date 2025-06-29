@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Bookie | Home</title>
-  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="Style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="Style.css" />
 </head>
 <body class="bookie-layout">
   <nav class="sidebar" id="sidebar">
     <button id="close-sidebar" class="close-btn" aria-label="Fechar menu">✖</button>
     <h2 class="sidebar-title">Bookie 📖</h2>
     <ul>
-      <li><a href="#">Meu Perfil</a></li>
+      <li><a href="profile.html">Meu Perfil</a></li>
       <li><a href="#">Home</a></li>
       <li><a href="#">Criar</a></li>
       <li><a href="#">Trocar Livros</a></li>
@@ -20,10 +20,9 @@
     </ul>
   </nav>
 
-  <div id="overlay" class="overlay hidden"></div>
+  <div id="overlay" class="overlay"></div>
 
   <div class="main-area">
-    
     <header class="topbar">
       <div class="topbar-left">
         <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu lateral">☰</button>
@@ -35,27 +34,9 @@
       <div class="new-post-bar">
         <button class="new-post-btn">+ Fazer Postagem</button>
       </div>
-
-      <section class="feed">
-        <article class="post">
-          <div class="post-header">
-            <strong>@name</strong> <span class="post-time">• há 15 minutos</span>
-          </div>
-          <p class="post-text">Acabei de terminar “A Hipótese do Amor”. Que delícia de leitura! ❤️</p>
-          <div class="post-footer">
-            <span>10 Curtidas</span> • <span>2 Comentários</span>
-          </div>
-        </article>
-
-        <article class="post">
-          <div class="post-header">
-            <strong>@marina</strong> <span class="post-time">• há 1 hora</span>
-          </div>
-          <p class="post-text">Lendo “Teto para Dois” e rindo horrores. 😄</p>
-          <div class="post-footer">
-            <span>5 Curtidas</span> • <span>1 Comentário</span>
-          </div>
-        </article>
+      <section>
+        <h2 class="section-title">Meus Livros</h2>
+        <div id="lista-livros" class="galeria-livros"></div>
       </section>
     </main>
   </div>
@@ -63,6 +44,14 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      query,
+      where
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA-CAyWmuhx_Z4onMkUKwbi9zdXV4SnGZs",
@@ -77,6 +66,27 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function parseVolumeInfo(volume) {
+      const capa = volume.imageLinks?.thumbnail || "https://via.placeholder.com/150x220?text=Sem+Capa";
+      const titulo = volume.nome || volume.title || "Sem Título";
+      const autor = (volume.autor && volume.autor[0]) || (volume.authors && volume.authors[0]) || "Autor desconhecido";
+      const descricao = volume.sinopse || volume.description || "";
+      return { capa, titulo, autor, descricao };
+    }
+
+    function criarCardLivro({ capa, titulo, autor, descricao }) {
+      const card = document.createElement("div");
+      card.className = "livro-card";
+      card.innerHTML = `
+        <img src="${capa}" alt="Capa do livro ${titulo}" />
+        <h3>${titulo}</h3>
+        <p><strong>${autor}</strong></p>
+        <p>${descricao.substring(0, 80)}${descricao.length > 80 ? "..." : ""}</p>
+      `;
+      return card;
+    }
 
     const logoutBtn = document.getElementById("logout-button");
     logoutBtn.addEventListener("click", async () => {
@@ -91,17 +101,49 @@
 
     toggle.addEventListener("click", () => {
       sidebar.classList.add("active");
-      overlay.classList.remove("hidden");
+      overlay.classList.add("active");
     });
 
     overlay.addEventListener("click", () => {
       sidebar.classList.remove("active");
-      overlay.classList.add("hidden");
+      overlay.classList.remove("active");
     });
 
     closeBtn.addEventListener("click", () => {
       sidebar.classList.remove("active");
-      overlay.classList.add("hidden");
+      overlay.classList.remove("active");
+    });
+
+    const livrosContainer = document.getElementById("lista-livros");
+
+    onAuthStateChanged(auth, async (user) => {
+      livrosContainer.innerHTML = "";
+
+      if (!user) {
+        livrosContainer.innerHTML = "<p>Faça login para ver seus livros.</p>";
+        return;
+      }
+
+      try {
+        const q = collection(db, "livros");
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          livrosContainer.innerHTML = "<p>Nenhum livro encontrado.</p>";
+          return;
+        }
+
+        querySnapshot.forEach((doc) => {
+          const livro = doc.data();
+          const volume = livro.volumeInfo || {};
+          const dadosLivro = parseVolumeInfo(volume);
+          const card = criarCardLivro(dadosLivro);
+          livrosContainer.appendChild(card);
+        });
+      } catch (error) {
+        livrosContainer.innerHTML = "<p>Erro ao carregar os livros.</p>";
+        console.error("Erro ao buscar livros:", error);
+      }
     });
   </script>
 </body>
