@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bookie | Edição de Livros</title>
+    <link rel="stylesheet" href="./css/Edit.css" />
+    <script src="js/pages/Edit.js" type="module"></script>
+
+</head>
+<body class="bookie-layout">
+  <nav class="sidebar" id="sidebar">
+    <button id="close-sidebar" class="close-btn">✖</button>
+    <h2 class="sidebar-title">Bookie 📖</h2>
+    <ul>
+      <li><a href="profile.html">Meu Perfil</a></li>
+      <li><a href="Home.html">Home</a></li>
+      <li><a href="Editar.html">Editar</a></li>
+      <li><a href="#">Trocar Livros</a></li>
+      <li><a href="#">Livros Salvos</a></li>
+      <li><button id="logout-button" class="logout-btn">Logout</button></li>
+    </ul>
+  </nav>
+
+  <div id="overlay" class="overlay hidden"></div>
+
+  <div class="main-area">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menu-toggle">☰</button>
+      </div>
+      <input type="text" class="search-input" placeholder="Buscar livros..." />
+    </header>
+
+    <main class="content">
+      <section>
+        <h2 class="section-title">Editar Livros</h2>
+        <div id="lista-livros" class="galeria-livros"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal-edicao" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-modal" id="fechar-modal">×</span>
+      <h3>Editar Livro</h3>
+      <form id="form-edicao">
+        <input type="text" id="edit-titulo" placeholder="Título" required />
+        <input type="text" id="edit-autor" placeholder="Autor" required />
+        <textarea id="edit-descricao" placeholder="Descrição"></textarea>
+        <input type="text" id="edit-capa" placeholder="URL da Capa" />
+        <button type="submit" class="edit-btn" id="editar-livro">Salvar Alterações</button>
+        <button type="button" class="delete-btn" id="excluir-livro">Excluir Livro</button>
+      </form>
+    </div>
+  </div>
+
+    
+</body>
+</html>

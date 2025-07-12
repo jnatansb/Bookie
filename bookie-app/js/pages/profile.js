@@ -1,5 +1,5 @@
-import { UserController } from "../bookie-api/UserController.js";
-import { auth } from "../bookie-api/FirebaseConfig.js";
+import { UserController } from "../../../bookie-api/UserController.js";
+import { auth } from "../../../bookie-api/FirebaseConfig.js";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 
 const loadingDiv = document.getElementById("loading");
