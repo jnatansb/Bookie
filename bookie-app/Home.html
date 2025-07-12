@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8" />
   <title>Bookie | Home</title>
@@ -14,8 +13,9 @@
     <h2 class="sidebar-title">Bookie 📖</h2>
     <ul>
       <li><a href="profile.html">Meu Perfil</a></li>
-      <li><a href="#">Home</a></li>      
+      <li><a href="#">Home</a></li>
       <li><a href="#" id="create-book">Criar</a></li>
+      <li><a href="FavoritesScreen.html">Favoritos</a></li>
       <li><a href="Editar.html">Editar</a></li>
       <li><a href="#">Trocar Livros</a></li>
       <li><a href="#">Livros Salvos</a></li>
@@ -41,7 +41,7 @@
       </section>
     </main>
   </div>
-
+  
   <!-- 2) Modal e overlay próprios para Criar/Editar -->
   <div id="modal-overlay" class="overlay oculto"></div>
   <div id="book-modal" class="modal oculto">
@@ -81,88 +81,29 @@
       addDoc,
       deleteDoc,
       updateDoc,
-      doc
+      doc,
+      query,
+      where
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // Config Firebase
-   const firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyA-CAyWmuhx_Z4onMkUKwbi9zdXV4SnGZs",
       authDomain: "bookie-8cb30.firebaseapp.com",
-      databaseURL: "https://bookie-8cb30-default-rtdb.firebaseio.com",
       projectId: "bookie-8cb30",
       storageBucket: "bookie-8cb30.appspot.com",
       messagingSenderId: "128047446609",
-      appId: "1:128047446609:web:114b80f8cbefec190c9670",
-      measurementId: "G-GDSGLFFE3M"
+      appId: "1:128047446609:web:114b80f8cbefec190c9670"
     };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    function parseVolumeInfo(volume) {
-      const capa = volume.imageLinks?.thumbnail || "https://via.placeholder.com/150x220?text=Sem+Capa";
-      const titulo = volume.nome || volume.title || "Sem Título";
-      const autor = (volume.autor && volume.autor[0]) || (volume.authors && volume.authors[0]) || "Autor desconhecido";
-      const descricao = volume.sinopse || volume.description || "";
-      return { capa, titulo, autor, descricao };
-    }
-
-    function criarCardLivro({ capa, titulo, autor, descricao }) {
-      const card = document.createElement("div");
-      card.className = "livro-card";
-      card.innerHTML = `
-        <img src="${capa}" alt="Capa do livro ${titulo}" />
-        <h3>${titulo}</h3>
-        <p><strong>${autor}</strong></p>
-        <p>${descricao.substring(0, 80)}${descricao.length > 80 ? "..." : ""}</p>
-      `;
-      return card;
-    }
-
-    const logoutBtn = document.getElementById("logout-button");
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    });
-
-    // Menu lateral - aguardar DOM estar pronto
-    document.addEventListener('DOMContentLoaded', function() {
-      const toggle = document.getElementById("menu-toggle");
-      const sidebar = document.getElementById("sidebar");
-      const overlay = document.getElementById("overlay");
-      const closeBtn = document.getElementById("close-sidebar");
-
-      if (toggle && sidebar && overlay && closeBtn) {
-        toggle.addEventListener("click", () => {
-          console.log("Menu clicado!"); // Debug
-          sidebar.classList.add("active");
-          overlay.classList.add("active");
-        });
-
-        overlay.addEventListener("click", () => {
-          sidebar.classList.remove("active");
-          overlay.classList.remove("active");
-        });
-
-        closeBtn.addEventListener("click", () => {
-          sidebar.classList.remove("active");
-          overlay.classList.remove("active");
-        });
-      } else {
-        console.error("Elementos do menu não encontrados!");
-      }
-    });
 
     const livrosContainer = document.getElementById("lista-livros");
-
-
-    // Helpers de UI
+    const form = document.getElementById("book-form");
     const createBtn = document.getElementById("create-book");
     const bookModal = document.getElementById("book-modal");
     const modalOverlay = document.getElementById("modal-overlay");
-    const closeModalBtn = document.getElementById("close-modal");
-    const cancelModalBtn = document.getElementById("cancel-modal");
-    const form = document.getElementById("book-form");
-
 
     function openModal() {
       bookModal.classList.remove("oculto");
@@ -179,11 +120,11 @@
     // Abrir/fechar modal
     createBtn.addEventListener("click", e => {
       e.preventDefault();
-      document.getElementById("modal-title").textContent = "Cadastrar Livro";
       openModal();
     });
-    closeModalBtn.addEventListener("click", closeModal);
-    cancelModalBtn.addEventListener("click", closeModal);
+
+    document.getElementById("close-modal").addEventListener("click", closeModal);
+    document.getElementById("cancel-modal").addEventListener("click", closeModal);
     modalOverlay.addEventListener("click", closeModal);
 
     // Submissão do form
@@ -197,152 +138,162 @@
           sinopse: form.descricao.value.trim(),
           imageLinks: { thumbnail: form.capa.value.trim() }
         },
-        userId: auth.currentUser.uid
+        userId: auth.currentUser.uid,
+        isFavorite: false
       };
-      
+
       try {
         if (form.dataset.editingId) {
           // Editando livro existente
           await updateDoc(doc(db, "livros", form.dataset.editingId), livro);
-          alert("Livro atualizado com sucesso!");
+          alert("Livro atualizado!");
           delete form.dataset.editingId;
         } else {
-          // Criando novo livro
           await addDoc(collection(db, "livros"), livro);
-          alert("Livro cadastrado com sucesso!");
+          alert("Livro adicionado!");
         }
         closeModal();
         loadBooks();
       } catch (error) {
         console.error("Erro ao salvar livro:", error);
-        alert("Erro ao salvar livro. Tente novamente.");
+        alert("Erro ao salvar livro.");
       }
     });
 
     // Carregar livros
     async function loadBooks() {
       livrosContainer.innerHTML = "";
-      
-      try {
-        const snapshot = await getDocs(collection(db, "livros"));
-        if (snapshot.empty) {
-          livrosContainer.innerHTML = "<p>Nenhum livro encontrado.</p>";
-          return;
-        }
-        
-        snapshot.forEach(docSnap => {
-          const data = docSnap.data().volumeInfo;
-          const isFavorite = docSnap.data().isFavorite || false;
-          const card = document.createElement("div");
-          card.className = "livro-card";
-          card.innerHTML = `
-            <img src="${data.imageLinks?.thumbnail ?? 'https://via.placeholder.com/150x220?text=Sem+Capa'}"/>
-            <h3>${data.nome}</h3>
-            <p><strong>${data.autor?.[0] ?? 'Autor desconhecido'}</strong></p>
-            <p>${(data.sinopse || "").substring(0, 80)}…</p>
-            <div class="card-actions">
-              <button class="btn-edit" onclick="editBook('${docSnap.id}')">✏️</button>
-              <button class="btn-delete" onclick="deleteBook('${docSnap.id}')">🗑️</button>
-              <button class="btn-favorite ${isFavorite ? 'favorited' : ''}" onclick="toggleFavorite('${docSnap.id}')">${isFavorite ? '❤️' : '🤍'}</button>
-            </div>
-          `;
-          livrosContainer.appendChild(card);
-        });
-      } catch (error) {
-        livrosContainer.innerHTML = "<p>Erro ao carregar os livros.</p>";
-        console.error("Erro ao buscar livros:", error);
-      }
+      const snapshot = await getDocs(collection(db, "livros"));
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data().volumeInfo;
+        const isFavorite = docSnap.data().isFavorite || false;
+        const card = document.createElement("div");
+        card.className = "livro-card";
+        card.innerHTML = `
+          <img src="${data.imageLinks?.thumbnail ?? 'https://via.placeholder.com/150x220?text=Sem+Capa'}"/>
+          <h3>${data.nome}</h3>
+          <p><strong>${data.autor?.[0] ?? 'Autor desconhecido'}</strong></p>
+          <p>${(data.sinopse || "").substring(0, 80)}…</p>
+          <div class="card-actions">
+            <button class="btn-edit" onclick="editBook('${docSnap.id}')">✏️</button>
+            <button class="btn-delete" onclick="deleteBook('${docSnap.id}')">🗑️</button>
+            <button class="btn-favorite ${isFavorite ? 'favorited' : ''}" onclick="toggleFavorite('${docSnap.id}')">${isFavorite ? '❤️' : '🤍'}</button>
+          </div>
+        `;
+        livrosContainer.appendChild(card);
+      });
     }
 
     // Função para deletar livro
     window.deleteBook = async function(bookId) {
-      if (!confirm("Tem certeza que deseja excluir este livro?")) return;
-      
-      try {
-        await deleteDoc(doc(db, "livros", bookId));
-        alert("Livro excluído com sucesso!");
-        loadBooks();
-      } catch (error) {
-        console.error("Erro ao excluir livro:", error);
-        alert("Erro ao excluir livro. Tente novamente.");
-      }
+      if (!confirm("Deseja excluir este livro?")) return;
+      await deleteDoc(doc(db, "livros", bookId));
+      loadBooks();
     };
 
     // Função para editar livro
     window.editBook = async function(bookId) {
-      try {
-        const snapshot = await getDocs(collection(db, "livros"));
-        let bookData = null;
-        
-        snapshot.forEach(docSnap => {
-          if (docSnap.id === bookId) {
-            bookData = docSnap.data().volumeInfo;
-          }
-        });
-        
-        if (!bookData) {
-          alert("Livro não encontrado!");
-          return;
+      const snapshot = await getDocs(collection(db, "livros"));
+      let bookData = null;
+      snapshot.forEach(docSnap => {
+        if (docSnap.id === bookId) {
+          bookData = docSnap.data().volumeInfo;
         }
-        
-        // Preencher o formulário com os dados do livro
-        document.getElementById("modal-title").textContent = "Editar Livro";
-        form.titulo.value = bookData.nome || '';
-        form.autor.value = bookData.autor?.[0] || '';
-        form.descricao.value = bookData.sinopse || '';
-        form.capa.value = bookData.imageLinks?.thumbnail || '';
+      });
+      if (!bookData) return alert("Livro não encontrado.");
+      form.titulo.value = bookData.nome || '';
+      form.autor.value = bookData.autor?.[0] || '';
+      form.descricao.value = bookData.sinopse || '';
+      form.capa.value = bookData.imageLinks?.thumbnail || '';
         
         // Guardar o ID do livro sendo editado
-        form.dataset.editingId = bookId;
-        
-        openModal();
-      } catch (error) {
-        console.error("Erro ao carregar dados do livro:", error);
-        alert("Erro ao carregar dados do livro.");
-      }
+      form.dataset.editingId = bookId;
+      openModal();
     };
 
-    // Função para favoritar/desfavoritar livro
-    window.toggleFavorite = async function(bookId) {
-      try {
-        const snapshot = await getDocs(collection(db, "livros"));
-        let bookData = null;
-        
-        snapshot.forEach(docSnap => {
-          if (docSnap.id === bookId) {
-            bookData = docSnap.data();
-          }
-        });
-        
-        if (!bookData) {
-          alert("Livro não encontrado!");
-          return;
-        }
-        
+    // ✅ FAVORITAR
+    window.toggleFavorite = async function (bookId) {
+        try {
+          const user = auth.currentUser;
+          if (!user) return alert("Você precisa estar logado.");
+
+          const bookDocRef = doc(db, "livros", bookId);
+          const bookSnap = await getDocs(collection(db, "livros"));
+          let bookData = null;
+
+          bookSnap.forEach(docSnap => {
+            if (docSnap.id === bookId) {
+              bookData = docSnap.data();
+            }
+          });
+
+          if (!bookData) return alert("Livro não encontrado.");
+
         // Alternar o estado de favorito
-        const isFavorite = bookData.isFavorite || false;
-        await updateDoc(doc(db, "livros", bookId), {
-          isFavorite: !isFavorite
-        });
-        
-        alert(isFavorite ? "Livro removido dos favoritos!" : "Livro adicionado aos favoritos!");
-        loadBooks();
-      } catch (error) {
-        console.error("Erro ao favoritar livro:", error);
-        alert("Erro ao favoritar livro. Tente novamente.");
-      }
-    };
+          const isFavorite = bookData.isFavorite || false;
+
+          // Atualiza o campo no livro
+          await updateDoc(bookDocRef, { isFavorite: !isFavorite });
+
+          const favoritosRef = collection(db, "favoritos");
+
+          if (!isFavorite) {
+            await addDoc(favoritosRef, {
+              volumeInfo: bookData.volumeInfo,
+              usuario: { id: user.uid, email: user.email },
+              timestamp: new Date()
+            });
+          } else {
+            const q = query(favoritosRef, where("usuario.id", "==", user.uid));
+            const favSnap = await getDocs(q);
+            favSnap.forEach(async (favDoc) => {
+              if (favDoc.data().volumeInfo?.nome === bookData.volumeInfo?.nome) {
+                await deleteDoc(doc(db, "favoritos", favDoc.id));
+              }
+            });
+          }
+
+          loadBooks();
+        } catch (e) {
+          console.error("Erro ao atualizar favorito:", e);
+          alert("Erro ao atualizar favorito.");
+        }
+      };
 
     // Autenticação / logout
     onAuthStateChanged(auth, user => {
       if (!user) return window.location.href = "login.html";
       loadBooks();
     });
+
     document.getElementById("logout-button")
       .addEventListener("click", async () => {
         await signOut(auth);
         window.location.href = "login.html";
       });
+
+    // Menu
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("menu-toggle");
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+      const closeBtn = document.getElementById("close-sidebar");
+
+      toggle.addEventListener("click", () => {
+        sidebar.classList.add("active");
+        overlay.classList.add("active");
+      });
+
+      overlay.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        overlay.classList.remove("active");
+      });
+
+      closeBtn.addEventListener("click", () => {
+        sidebar.classList.remove("active");
+        overlay.classList.remove("active");
+      });
+    });
   </script>
 </body>
 
