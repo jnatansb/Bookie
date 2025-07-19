@@ -26,7 +26,7 @@ loginForm.addEventListener("submit", async (e) => {
 
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = "Home.html";
+    window.location.href = "html/Home.html";
   } catch (error) {
     const errorMessage = document.getElementById("error-message");
     errorMessage.textContent = "E-mail ou senha inválidos.";

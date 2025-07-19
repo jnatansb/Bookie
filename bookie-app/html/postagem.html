@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bookie | Nova Postagem</title>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/postagem.css" />
+</head>
+
+<body class="bookie-layout">
+  <nav class="sidebar" id="sidebar">
+    <button id="close-sidebar" class="close-btn" aria-label="Fechar menu">✖</button>
+    <h2 class="sidebar-title">Bookie 📖</h2>
+    <ul>
+      <li><a href="profile.html">Meu Perfil</a></li>
+      <li><a href="Home.html">Home</a></li>
+      <li><a href="#" id="create-book">Criar</a></li>
+      <li><a href="FavoritesScreen.html">Favoritos</a></li>
+      <li><a href="Edit.html">Editar</a></li>
+      <li><a href="#">Trocar Livros</a></li>
+      <li><a href="#">Livros Salvos</a></li>
+      <li><button id="logout-button" class="logout-btn">Logout</button></li>
+    </ul>
+  </nav>
+
+  <div id="overlay" class="overlay sidebar-overlay"></div>
+
+  <div class="main-area">
+    <header class="topbar">
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu lateral">☰</button>
+      <input type="text" class="search-input" placeholder="Buscar livros, pessoas, listas..." />
+    </header>
+
+    <main class="content">
+      <div class="post-header">
+        <h2 class="section-title">Nova Postagem</h2>
+        <button class="back-btn" onclick="window.history.back()">← Voltar</button>
+      </div>
+
+      <div class="post-form-container">
+        <form id="post-form" class="post-form">
+          <div class="form-group">
+            <label for="post-title">Título da Postagem</label>
+            <input type="text" id="post-title" name="title" required placeholder="Digite o título da sua postagem..." />
+          </div>
+
+          <div class="form-group">
+            <label for="post-content">Conteúdo</label>
+            <textarea id="post-content" name="content" required placeholder="Compartilhe seus pensamentos sobre livros, recomendações, resenhas..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="post-book">Livro Relacionado (opcional)</label>
+            <input type="text" id="post-book" name="book" placeholder="Nome do livro relacionado à postagem..." />
+          </div>
+
+          <div class="form-group">
+            <label for="post-image">URL da Imagem (opcional)</label>
+            <input type="url" id="post-image" name="image" placeholder="https://exemplo.com/imagem.jpg" />
+          </div>
+
+          <div class="form-group">
+            <label for="post-tags">Tags (separadas por vírgula)</label>
+            <input type="text" id="post-tags" name="tags" placeholder="ficção, romance, fantasia..." />
+          </div>
+
+          <div class="form-buttons">
+            <button type="submit" class="btn-primary">
+              <span class="btn-text">Fazer Postagem</span>
+              <span class="btn-loading" style="display: none;">Publicando...</span>
+            </button>
+            <button type="button" class="btn-secondary" onclick="window.history.back()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="recent-posts">
+        <h3 class="section-subtitle">Suas Postagens Recentes</h3>
+        <div id="user-posts" class="posts-list"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/postagem.js" type="module"></script>
+</body>
+</html>
