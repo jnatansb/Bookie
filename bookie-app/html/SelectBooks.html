@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selecionar Livros - Bookie</title>
+  <link rel="stylesheet" href="../css/SelectBooks.css">
+</head>
+<body>
+  <div class="select-books-container">
+    <div class="selection-header">
+      <h1 id="list-title">Selecionar Livros</h1>
+      <div class="selection-info">
+        <span id="selected-count">0</span> livros selecionados
+      </div>
+    </div>
+    
+    <div class="search-bar">
+      <input type="text" id="book-search" placeholder="Buscar livros...">
+      <button id="search-btn">🔍</button>
+    </div>
+    
+    <div id="books-grid" class="books-grid"></div>
+    
+    <div class="selection-actions">
+      <button id="confirm-selection" class="btn-confirm" disabled>
+        Criar Lista com <span id="selected-badge">0</span> livros
+      </button>
+    </div>
+  </div>
+
+  <script src="../js/SelectBooks.js" type="module"></script>
+</body>
+</html>

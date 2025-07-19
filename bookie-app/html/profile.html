@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Perfil - Bookie</title>
   <link rel="stylesheet" href="../css/Profile.css">
-
 </head>
 
 <body>
@@ -19,49 +17,49 @@
 
     <div id="profile-content" style="display: none;">
       <div class="profile-header">
-        <img id="profile-image" class="profile-image" src="" alt="Foto de perfil" style="display: none;">
+        <img id="profile-image" class="profile-image" src="" alt="Foto de perfil">
         <h2 id="profile-name"></h2>
         <p id="profile-email"></p>
       </div>
 
       <div class="profile-info">
-        <div class="info-item">
-          <span class="info-label">Bio:</span>
-          <p id="profile-bio"></p>
-        </div>
-
-        <div class="info-item">
-          <span class="info-label">Membro desde:</span>
-          <p id="profile-created"></p>
-        </div>
-
-        <div class="info-item">
-          <span class="info-label">Seguidores:</span>
-          <span id="profile-followers">0</span>
-        </div>
-
-        <div class="info-item">
-          <span class="info-label">Seguindo:</span>
-          <span id="profile-following">0</span>
-        </div>
-
-        <div class="info-item">
-          <span class="info-label">Posts:</span>
-          <span id="profile-posts">0</span>
-        </div>
+        <div class="info-item"><span class="info-label">Bio:</span> <p id="profile-bio"></p></div>
+        <div class="info-item"><span class="info-label">Membro desde:</span> <p id="profile-created"></p></div>
+        <div class="info-item"><span class="info-label">Seguidores:</span> <span id="profile-followers">0</span></div>
+        <div class="info-item"><span class="info-label">Seguindo:</span> <span id="profile-following">0</span></div>
+        <div class="info-item"><span class="info-label">Posts:</span> <span id="profile-posts">0</span></div>
       </div>
 
       <div class="buttons">
         <button class="btn-primary" onclick="editProfile()">Editar Perfil</button>
-        <button class="btn-warning" onclick="testUpdate()">Testar Atualização</button>
         <button class="btn-danger" onclick="deleteAccount()">Deletar Conta</button>
         <button class="btn-secondary" onclick="logout()">Sair</button>
       </div>
+
+      <main class="profile-sections">
+        <section class="bookshelf-section">
+          <h3 class="section-subtitle">📚 Estante</h3>
+          <div id="user-books" class="bookshelf-grid"></div>
+        </section>
+
+        <section class="lists-section">
+        <div class="section-header">
+          <h3 class="section-subtitle">📚 Minhas Listas</h3>
+          <button class="btn-create-list" onclick="window.location.href='CreateList.html'">
+            + Criar Nova Lista
+          </button>
+        </div>
+        <div id="user-lists" class="lists-grid"></div>
+      </section>
+
+        <section class="posts-section">
+          <h3 class="section-subtitle">📝 Minhas Postagens</h3>
+          <div id="user-posts" class="posts-list"></div>
+        </section>
+      </main>
     </div>
   </div>
 
   <script src="../js/profile.js" type="module"></script>
-
 </body>
-
 </html>

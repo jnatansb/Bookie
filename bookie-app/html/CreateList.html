@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Lista - Bookie</title>
+  <link rel="stylesheet" href="../css/CreateList.css">
+</head>
+<body>
+  <div class="create-list-container">
+    <h1>Criar Nova Lista</h1>
+    
+    <form id="list-form">
+      <div class="form-group">
+        <label for="list-name">Nome da Lista*</label>
+        <input type="text" id="list-name" required placeholder="Ex: Meus Favoritos, Leituras de 2025">
+      </div>
+      
+      <div class="form-group">
+        <label for="list-description">Descrição (Opcional)</label>
+        <textarea id="list-description" placeholder="Descreva sua lista..."></textarea>
+      </div>
+      
+      <div class="form-actions">
+        <button type="button" id="cancel-btn" class="btn-cancel">Cancelar</button>
+        <button type="button" id="next-btn" class="btn-next">Próximo</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="../js/CreateList.js" type="module"></script>
+</body>
+</html>
