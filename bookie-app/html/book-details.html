@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bookie | Detalhes do Livro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/book-details.css" />
+</head>
+
+<body class="bookie-layout">
+  <nav class="sidebar" id="sidebar">
+    <button id="close-sidebar" class="close-btn" aria-label="Fechar menu">✖</button>
+    <h2 class="sidebar-title">Bookie 📖</h2>
+    <ul>
+      <li><a href="Profile.html">Meu Perfil</a></li>
+      <li><a href="Home.html">Home</a></li>
+      <li><a href="#" id="create-book">Criar</a></li>
+      <li><a href="FavoritesScreen.html">Favoritos</a></li>
+      <li><a href="Edit.html">Editar</a></li>
+      <li><a href="#">Trocar Livros</a></li>
+      <li><a href="#">Livros Salvos</a></li>
+      <li><button id="logout-button" class="logout-btn">Logout</button></li>
+    </ul>
+  </nav>
+
+  <div id="overlay" class="overlay sidebar-overlay"></div>
+
+  <div class="main-area">
+    <header class="topbar">
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu lateral">☰</button>    
+      <input type="text" class="search-input" placeholder="Buscar livros, pessoas, listas..." />
+    </header>
+
+    <main class="content">
+      <div class="book-header">
+        <div class="book-cover">
+          <img id="book-image" src="" alt="Capa do livro" />
+        </div>
+        <div class="book-info">
+          <h1 id="book-title">Carregando...</h1>
+          <p class="book-author" id="book-author">Autor</p>
+          <p class="book-description" id="book-description">Descrição</p>
+          <div class="book-actions">
+            <button id="favorite-btn" class="btn-favorite">🤍 Favoritar</button>
+          </div>
+        </div>
+      </div>
+
+      <section class="reviews-section">
+        <div class="reviews-header">
+          <h2>Resenhas</h2>
+          <button id="add-review-btn" class="btn-primary">+ Adicionar Resenha</button>
+        </div>
+
+        <div id="review-form" class="review-form hidden">
+          <h3>Escrever Resenha</h3>
+          <form id="review-form-element">
+            <div class="rating-input">
+              <label>Avaliação:</label>
+              <div class="stars">
+                <span class="star" data-rating="1">⭐</span>
+                <span class="star" data-rating="2">⭐</span>
+                <span class="star" data-rating="3">⭐</span>
+                <span class="star" data-rating="4">⭐</span>
+                <span class="star" data-rating="5">⭐</span>
+              </div>
+              <input type="hidden" id="rating" name="rating" value="0" />
+            </div>
+            <textarea id="review-text" name="review" placeholder="Escreva sua resenha aqui..." required></textarea>
+            <div class="form-buttons">
+              <button type="submit">Publicar Resenha</button>
+              <button type="button" id="cancel-review">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="reviews-list" class="reviews-list">
+          <p class="loading">Carregando resenhas...</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/book-details.js" type="module"></script>
+</body>
+</html>

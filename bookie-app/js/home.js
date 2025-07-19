@@ -96,10 +96,12 @@ import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/fi
         const card = document.createElement("div");
         card.className = "livro-card";
         card.innerHTML = `
-          <img src="${data.imageLinks?.thumbnail ?? 'https://via.placeholder.com/150x220?text=Sem+Capa'}"/>
-          <h3>${data.nome}</h3>
-          <p><strong>${data.autor?.[0] ?? 'Autor desconhecido'}</strong></p>
-          <p>${(data.sinopse || "").substring(0, 80)}…</p>
+          <div class="book-content" onclick="viewBookDetails('${docSnap.id}')" style="cursor: pointer;">
+            <img src="${data.imageLinks?.thumbnail ?? 'https://via.placeholder.com/150x220?text=Sem+Capa'}"/>
+            <h3>${data.nome}</h3>
+            <p><strong>${data.autor?.[0] ?? 'Autor desconhecido'}</strong></p>
+            <p>${(data.sinopse || "").substring(0, 80)}…</p>
+          </div>
           <div class="card-actions">
             <button class="btn-edit" onclick="editBook('${docSnap.id}')">✏️</button>
             <button class="btn-delete" onclick="deleteBook('${docSnap.id}')">🗑️</button>
@@ -109,6 +111,11 @@ import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/fi
         livrosContainer.appendChild(card);
       });
     }
+
+    // Função para ver detalhes do livro
+    window.viewBookDetails = function(bookId) {
+      window.location.href = `book-details.html?bookId=${bookId}`;
+    };
 
     // Função para deletar livro
     window.deleteBook = async function(bookId) {
