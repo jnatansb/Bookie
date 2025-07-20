@@ -51,7 +51,7 @@ onAuthStateChanged(auth, async (user) => {
     const listsContainer = document.getElementById("user-lists");
     listsContainer.innerHTML = "";
     
-    const q = query(collection(db, "lists"), where("userId", "==", uid));
+    const q = query(collection(db, "listas"), where("userId", "==", uid));
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
@@ -74,9 +74,10 @@ onAuthStateChanged(auth, async (user) => {
         <h4>${list.name}</h4>
         ${list.description ? `<p>${list.description}</p>` : ''}
         <div class="list-meta">
-          <span>📚 ${list.books.length} livros</span>
-          <button onclick="viewList('${doc.id}')">Ver Lista</button>
+          <span>📚 ${list.livros.length} livros</span>
+          <button onclick="viewList('${doc.id}', this)">Ver Lista</button>
         </div>
+        <div class="list-books" style="display:none; margin-top: 10px;"></div>
       `;
       listsContainer.appendChild(listElement);
     });
@@ -90,6 +91,68 @@ onAuthStateChanged(auth, async (user) => {
     `;
   }
 }
+
+// Função viewList que carrega os livros da lista e mostra dentro do container da lista clicada
+window.viewList = async function(listId, buttonElement) {
+  try {
+    const listCard = buttonElement.closest('.list-card');
+    const booksContainer = listCard.querySelector('.list-books');
+
+    // Toggle para esconder/mostrar
+    if (booksContainer.style.display === 'block') {
+      booksContainer.style.display = 'none';
+      buttonElement.textContent = 'Ver Lista';
+      return;
+    }
+
+    booksContainer.style.display = 'block';
+    buttonElement.textContent = 'Esconder Lista';
+    booksContainer.innerHTML = '<p>Carregando livros...</p>';
+
+    const docRef = doc(db, "listas", listId);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      booksContainer.innerHTML = '<p>Lista não encontrada.</p>';
+      return;
+    }
+
+    const listData = docSnap.data();
+    const livros = listData.livros || [];
+
+    if (livros.length === 0) {
+      booksContainer.innerHTML = '<p>Esta lista não possui livros.</p>';
+      return;
+    }
+
+    booksContainer.innerHTML = ''; // limpa
+
+    livros.forEach((livro) => {
+      const volume = livro.volumeInfo || {};
+      const capa = volume.imageLinks?.thumbnail || "https://placehold.co/150x220?text=Sem+Capa";
+      const titulo = volume.title || volume.nome || "Sem Título";
+      const autor = volume.autor?.[0] || volume.authors?.[0] || "Autor desconhecido";
+      const sinopse = (volume.sinopse || volume.description || "").substring(0, 80) + "…";
+
+      const card = document.createElement("div");
+      card.className = "livro-card";  // Mesma classe do seu CSS para card do livro
+      card.style.marginBottom = "1rem";
+      card.innerHTML = `
+        <div class="book-content" style="cursor: default;">
+          <img src="${capa}" alt="Capa do livro" />
+          <h3>${titulo}</h3>
+          <p><strong>${autor}</strong></p>
+          <p>${sinopse}</p>
+        </div>
+      `;
+      booksContainer.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error("Erro ao carregar livros da lista:", error);
+    alert("Erro ao carregar livros da lista.");
+  }
+};
 
   // Pega dados do Auth
   profileName.textContent = user.displayName || "Usuário sem nome";
@@ -105,14 +168,14 @@ onAuthStateChanged(auth, async (user) => {
       const userData = userDocSnap.data();
 
       profileBio.textContent = userData.bio || "Nenhuma bio adicionada";
-      profileImage.src = userData.profileImage || "default-profile-image.jpg";
+      profileImage.src = userData.profileImage || "https://placehold.co/120x120?text=Foto";
       profileFollowers.textContent = userData.followersCount || "0";
       profileFollowing.textContent = userData.followingCount || "0";
       profilePosts.textContent = userData.postsCount || "0";
     } else {
       // Se não tiver no Firestore, exibe dados padrão
       profileBio.textContent = "Nenhuma bio adicionada";
-      profileImage.src = user.photoURL || "default-profile-image.jpg";
+      profileImage.src = userData.profileImage || "https://placehold.co/120x120?text=Foto";
       profileFollowers.textContent = "0";
       profileFollowing.textContent = "0";
       profilePosts.textContent = "0";
@@ -120,7 +183,7 @@ onAuthStateChanged(auth, async (user) => {
   } catch (error) {
     console.error("Erro ao buscar dados do usuário no Firestore:", error);
     profileBio.textContent = "Nenhuma bio adicionada";
-    profileImage.src = user.photoURL || "default-profile-image.jpg";
+    profileImage.src = userData.profileImage || "https://placehold.co/120x120?text=Foto";
   }
 
   // Carrega livros do usuário
@@ -146,7 +209,7 @@ async function loadUserBooks(uid) {
     snapshot.forEach((doc) => {
       const livro = doc.data();
       const volume = livro.volumeInfo || {};
-      const capa = volume.imageLinks?.thumbnail || "https://via.placeholder.com/150x220?text=Sem+Capa";
+      const capa = volume.imageLinks?.thumbnail || "https://placehold.co/150x220?text=Sem+Capa";
       const titulo = volume.title || volume.nome || "Sem Título";
 
       const card = document.createElement("div");
