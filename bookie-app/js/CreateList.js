@@ -10,11 +10,9 @@ const firebaseConfig = {
   appId: "1:128047446609:web:114b80f8cbefec190c9670"
 };
 
-// Inicialize o Firebase apenas uma vez
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Verifique a autenticação antes de qualquer ação
 let currentUser = null;
 
 onAuthStateChanged(auth, (user) => {
@@ -27,7 +25,6 @@ onAuthStateChanged(auth, (user) => {
   console.log("Usuário autenticado:", user.email);
 });
 
-// Função para navegar para a página de seleção
 async function proceedToAddBooks() {
   console.log("Botão próximo clicado");
   
@@ -63,7 +60,6 @@ async function proceedToAddBooks() {
   }
 }
 
-// Configuração dos eventos
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Página CreateList carregada");
   

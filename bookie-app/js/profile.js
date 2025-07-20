@@ -92,13 +92,11 @@ onAuthStateChanged(auth, async (user) => {
   }
 }
 
-// Função viewList que carrega os livros da lista e mostra dentro do container da lista clicada
 window.viewList = async function(listId, buttonElement) {
   try {
     const listCard = buttonElement.closest('.list-card');
     const booksContainer = listCard.querySelector('.list-books');
 
-    // Toggle para esconder/mostrar
     if (booksContainer.style.display === 'block') {
       booksContainer.style.display = 'none';
       buttonElement.textContent = 'Ver Lista';
@@ -125,7 +123,7 @@ window.viewList = async function(listId, buttonElement) {
       return;
     }
 
-    booksContainer.innerHTML = ''; // limpa
+    booksContainer.innerHTML = '';
 
     livros.forEach((livro) => {
       const volume = livro.volumeInfo || {};
@@ -135,7 +133,7 @@ window.viewList = async function(listId, buttonElement) {
       const sinopse = (volume.sinopse || volume.description || "").substring(0, 80) + "…";
 
       const card = document.createElement("div");
-      card.className = "livro-card";  // Mesma classe do seu CSS para card do livro
+      card.className = "livro-card";
       card.style.marginBottom = "1rem";
       card.innerHTML = `
         <div class="book-content" style="cursor: default;">
@@ -152,15 +150,13 @@ window.viewList = async function(listId, buttonElement) {
     console.error("Erro ao carregar livros da lista:", error);
     alert("Erro ao carregar livros da lista.");
   }
-};
+  };
 
-  // Pega dados do Auth
   profileName.textContent = user.displayName || "Usuário sem nome";
   profileEmail.textContent = user.email || "email@exemplo.com";
   profileCreated.textContent = formatDate(user.metadata.creationTime);
 
   try {
-    // Pega dados extras do Firestore
     const userDocRef = doc(db, "users", user.uid);
     const userDocSnap = await getDoc(userDocRef);
 
@@ -173,7 +169,6 @@ window.viewList = async function(listId, buttonElement) {
       profileFollowing.textContent = userData.followingCount || "0";
       profilePosts.textContent = userData.postsCount || "0";
     } else {
-      // Se não tiver no Firestore, exibe dados padrão
       profileBio.textContent = "Nenhuma bio adicionada";
       profileImage.src = userData.profileImage || "https://placehold.co/120x120?text=Foto";
       profileFollowers.textContent = "0";
@@ -186,10 +181,8 @@ window.viewList = async function(listId, buttonElement) {
     profileImage.src = userData.profileImage || "https://placehold.co/120x120?text=Foto";
   }
 
-  // Carrega livros do usuário
   await loadUserBooks(user.uid);
 
-  // Mostra o conteúdo após carregar tudo
   document.getElementById("loading").style.display = "none";
   document.getElementById("profile-content").style.display = "block";
 });
