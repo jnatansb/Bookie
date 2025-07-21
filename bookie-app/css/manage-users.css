@@ -1,0 +1,124 @@
+body {
+  font-family: 'Work Sans', sans-serif;
+  margin: 0;
+  padding: 2rem;
+  background-color: #F7F7F7;
+  color: #333;
+}
+
+h1 {
+  color: #6F257A;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+/* Container principal */
+#users-container {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 1.5rem 2rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Cada linha de usuário */
+.user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #E2E2E2;
+  padding: 0.8rem 0;
+  transition: background-color 0.2s ease;
+}
+
+.user-row:hover {
+  background-color: #f9f2fb;
+}
+
+/* Área dos inputs nome e email */
+.user-info {
+  display: flex;
+  gap: 1.5rem;
+  flex-grow: 1;
+}
+
+.user-info input {
+  font-size: 1rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: 220px;
+  color: #333;
+  transition: border-color 0.2s ease;
+}
+
+.user-info input:disabled {
+  background-color: #f7f7f7;
+  border-color: transparent;
+  color: #666;
+}
+
+.user-info input:focus {
+  outline: none;
+  border-color: #6F257A;
+}
+
+/* Botões alinhados à direita */
+.buttons {
+  display: flex;
+  gap: 0.6rem;
+}
+
+/* Botões com cores e estilos do Bookie */
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background-color 0.25s ease;
+  color: white;
+  user-select: none;
+}
+
+/* Botão Editar */
+button.edit-btn {
+  background-color: #6F257A;
+}
+
+button.edit-btn:hover {
+  background-color: #591e66;
+}
+
+/* Botão Salvar */
+button.save-btn {
+  background-color: #27ae60;
+}
+
+button.save-btn:hover {
+  background-color: #1e7a47;
+}
+
+/* Botão Cancelar */
+button.cancel-btn {
+  background-color: #b0b0b0;
+  color: #333;
+}
+
+button.cancel-btn:hover {
+  background-color: #999999;
+  color: #222;
+}
+
+/* Botão Excluir */
+button.delete-btn {
+  background-color: #c0392b;
+}
+
+button.delete-btn:hover {
+  background-color: #8e291f;
+}

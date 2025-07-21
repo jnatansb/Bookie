@@ -125,12 +125,22 @@ window.viewList = async function(listId, buttonElement) {
 
     booksContainer.innerHTML = '';
 
-    livros.forEach((livro) => {
+    for (const livroId of livros) {
+    try {
+      const livroRef = doc(db, "livros", livroId);
+      const livroSnap = await getDoc(livroRef);
+
+      if (!livroSnap.exists()) {
+        console.warn(`Livro com ID ${livroId} não encontrado.`);
+        continue;
+      }
+
+      const livro = livroSnap.data();
       const volume = livro.volumeInfo || {};
       const capa = volume.imageLinks?.thumbnail || "https://placehold.co/150x220?text=Sem+Capa";
       const titulo = volume.title || volume.nome || "Sem Título";
-      const autor = volume.autor?.[0] || volume.authors?.[0] || "Autor desconhecido";
-      const sinopse = (volume.sinopse || volume.description || "").substring(0, 80) + "…";
+      const autor = volume.authors?.[0] || volume.autor || "Autor desconhecido";
+      const sinopse = (volume.description || livro.sinopse || "").substring(0, 80) + "…";
 
       const card = document.createElement("div");
       card.className = "livro-card";
@@ -143,8 +153,12 @@ window.viewList = async function(listId, buttonElement) {
           <p>${sinopse}</p>
         </div>
       `;
+
       booksContainer.appendChild(card);
-    });
+    } catch (err) {
+      console.error("Erro ao buscar livro:", err);
+    }
+  }
 
   } catch (error) {
     console.error("Erro ao carregar livros da lista:", error);
@@ -189,7 +203,7 @@ window.viewList = async function(listId, buttonElement) {
 
 async function loadUserBooks(uid) {
   try {
-    const q = query(collection(db, "livros"), where("usuario.uid", "==", uid));
+    const q = query(collection(db, "livros"), where("userId", "==", uid));
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
@@ -203,13 +217,15 @@ async function loadUserBooks(uid) {
       const livro = doc.data();
       const volume = livro.volumeInfo || {};
       const capa = volume.imageLinks?.thumbnail || "https://placehold.co/150x220?text=Sem+Capa";
-      const titulo = volume.title || volume.nome || "Sem Título";
+      const titulo = volume.nome || volume.title || "Sem Título";
+      const autor = volume.authors?.[0] || volume.autor || "Autor desconhecido";
 
       const card = document.createElement("div");
       card.className = "livro-card";
       card.innerHTML = `
         <img src="${capa}" alt="Capa do livro" />
-        <p>${titulo}</p>
+        <h3>${titulo}</h3>
+        <p>${autor}</p>
       `;
       userBooksContainer.appendChild(card);
     });

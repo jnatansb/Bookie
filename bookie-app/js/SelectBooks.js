@@ -70,9 +70,11 @@ function renderBooks(books) {
   books.forEach(book => {
     const isSelected = selectedBooks.includes(book.id);
 
-    const title = book.titulo || book.nome || book.volumeInfo?.title || "Sem título";
-    const author = book.autor || book.volumeInfo?.authors?.[0] || "Desconhecido";
-    const image = book.imagem || book.volumeInfo?.imageLinks?.thumbnail || "https://via.placeholder.com/150x200?text=Sem+Capa";
+    const volume = book.volumeInfo || {};
+    const title = volume.nome || volume.title || "Sem título";
+    const author = volume.autor?.[0] || volume.authors?.[0] || "Desconhecido";
+    const image = volume.imageLinks?.thumbnail || "https://via.placeholder.com/150x200?text=Sem+Capa";
+
 
     const card = document.createElement('div');
     card.className = `book-card ${isSelected ? 'selected' : ''}`;
